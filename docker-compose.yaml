@@ -1,0 +1,17 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: test1234 # Root kullanıcısı için parola
+      MYSQL_DATABASE: crm_db           # Otomatik olarak oluşturulacak veritabanı
+      MYSQL_USER: admin                    # Yeni kullanıcı oluşturma
+      MYSQL_PASSWORD: test1234      # Yeni kullanıcı için parola
+    ports:
+      - "3306:3306"                         # MySQL'i yerel makinenizde 3306 portuna yönlendirir
+    volumes:
+      - mysql_data:/var/lib/mysql           # Veritabanı verilerinin kalıcı olmasını sağlar
+    restart: always                         # Container'ın otomatik yeniden başlatılması
+
+volumes:
+  mysql_data:
