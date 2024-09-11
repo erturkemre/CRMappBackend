@@ -6,7 +6,10 @@ import com.jekirdek.dto.response.CustomerResponse;
 import com.jekirdek.entity.Customer;
 import com.jekirdek.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -45,4 +48,8 @@ public class CustomerService {
     }
 
 
+    public List<CustomerResponse> getAllCustomer() {
+        List<Customer> all = customerRepository.findAll();
+        return CustomerConverter.toResponse(all);
+    }
 }
