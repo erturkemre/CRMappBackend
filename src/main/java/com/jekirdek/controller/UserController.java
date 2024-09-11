@@ -1,9 +1,11 @@
 package com.jekirdek.controller;
 
+import com.jekirdek.dto.request.UserLoginRequest;
 import com.jekirdek.dto.request.UserSaveRequest;
 import com.jekirdek.dto.response.UserResponse;
 import com.jekirdek.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -17,6 +19,11 @@ public class UserController {
     public UserResponse registerUser(@RequestBody UserSaveRequest userSaveRequest){
         UserResponse createdUser = userService.registerUser(userSaveRequest);
         return createdUser;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser(@RequestBody UserLoginRequest userLoginRequest){
+        return ResponseEntity.ok(userService.loginUser(userLoginRequest));
     }
 
 

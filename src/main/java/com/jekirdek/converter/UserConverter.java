@@ -2,6 +2,7 @@ package com.jekirdek.converter;
 
 import com.jekirdek.dto.response.UserResponse;
 import com.jekirdek.entity.User;
+import com.jekirdek.utils.JwtUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserConverter {
     public static UserResponse toResponse(User user) {
+
         return UserResponse.builder()
                 .email(user.getEmail())
                 .username(user.getUsername())
