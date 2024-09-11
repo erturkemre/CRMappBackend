@@ -1,5 +1,6 @@
 package com.jekirdek.service;
 
+import com.jekirdek.converter.UserConverter;
 import com.jekirdek.dto.request.UserSaveRequest;
 import com.jekirdek.dto.response.UserResponse;
 import com.jekirdek.entity.User;
@@ -23,14 +24,20 @@ public class UserService {
         user.setRole(Role.USER);
 
         User savedUser = userRepository.save(user);
+        return UserConverter.toResponse(savedUser);
+    }
 
-        UserResponse response = new UserResponse();
-        response.setUsername(savedUser.getUsername());
-        response.setEmail(savedUser.getEmail());
-        response.setRole(savedUser.getRole());
-        response.setCreatedAt(savedUser.getCreatedAt());
-        response.setUpdatedAt(savedUser.getUpdatedAt());
+    public UserResponse updateUser(Long id, UserSaveRequest userSaveRequest) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return response;
+        user.setUsername(userSaveRequest.getUsername());
+        if (!userSaveRequest.getPassword().isEmpty()) {
+            user.setPassword(userSaveRequest.getPassword());
+        }
+
+
+        User updatedUser = userRepository.save(user);
+        return UserConverter.toResponse(updatedUser);
     }
 }

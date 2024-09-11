@@ -20,5 +20,10 @@ public class UserController {
     }
 
 
+    @PutMapping("/{id}")
+    public UserResponse updateUser(@PathVariable Long id, @RequestBody UserSaveRequest userSaveRequest) {
+        UserResponse updatedUser = userService.updateUser(id, userSaveRequest);
+        return updatedUser;
+    }
 
 }
