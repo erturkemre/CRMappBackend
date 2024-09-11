@@ -5,9 +5,11 @@ import com.jekirdek.dto.request.UserSaveRequest;
 import com.jekirdek.dto.response.UserResponse;
 import com.jekirdek.entity.User;
 import com.jekirdek.entity.enums.Role;
+import com.jekirdek.exception.ErrorException;
 import com.jekirdek.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
 
 
+    @Transactional
     public UserResponse registerUser(UserSaveRequest userSaveRequest) {
         User user = new User();
         user.setUsername(userSaveRequest.getUsername());
@@ -27,9 +30,10 @@ public class UserService {
         return UserConverter.toResponse(savedUser);
     }
 
+    @Transactional
     public UserResponse updateUser(Long id, UserSaveRequest userSaveRequest) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ErrorException("User not found"));
 
         user.setUsername(userSaveRequest.getUsername());
         if (!userSaveRequest.getPassword().isEmpty()) {
