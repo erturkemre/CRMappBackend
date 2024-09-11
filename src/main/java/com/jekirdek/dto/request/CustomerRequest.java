@@ -19,6 +19,5 @@ public class CustomerRequest {
     private String email;
     private String region;
     private LocalDateTime registrationDate;
-
     private Long userId;
 }

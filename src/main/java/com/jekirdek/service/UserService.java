@@ -58,7 +58,7 @@ public class UserService {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new ErrorException("USER_NOT_FOUND"));
 
-        return jwtUtil.generateToken(user);
+        return jwtUtil.generateToken(user,user.getId(),String.valueOf(user.getRole()),user.getEmail());
 
     }
 
