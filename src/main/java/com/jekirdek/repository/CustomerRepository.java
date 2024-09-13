@@ -25,4 +25,8 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
                                    @Param("startDate") LocalDateTime startDate,
                                    @Param("endDate") LocalDateTime endDate,
                                    @Param("region") String region);
+
+
+    @Query("SELECT c FROM Customer c WHERE c.userId = :userId")
+    List<Customer> findByCreatedBy(@Param("userId") Long userId);
 }

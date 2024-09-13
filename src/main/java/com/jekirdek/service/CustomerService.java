@@ -8,10 +8,14 @@ import com.jekirdek.exception.ErrorException;
 import com.jekirdek.repository.CustomerRepository;
 
 import com.jekirdek.utils.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +28,7 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final JwtUtil jwtUtil;
+
 
     public CustomerResponse addCustomer(String token, CustomerRequest customerRequest) {
         Customer customer = CustomerConverter.toEntity(customerRequest);
@@ -64,8 +69,32 @@ public class CustomerService {
 
 
     public List<CustomerResponse> getAllCustomer() {
-        List<Customer> all = customerRepository.findAll();
-        return CustomerConverter.toResponse(all);
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String jwtToken = request.getHeader("Authorization");
+
+        if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
+            jwtToken = jwtToken.substring(7);
+        }
+
+        if (jwtToken == null) {
+            throw new ErrorException("JWT token not found in request headers");
+        }
+        log.info(jwtToken);
+        Long userId = jwtUtil.extractUserId(jwtToken);
+        String userRole = jwtUtil.extractRole(jwtToken);
+        log.info(userRole);
+        List<Customer> customers;
+
+        if ("ADMIN".equals(userRole)) {
+
+            customers = customerRepository.findAll();
+        } else {
+
+            customers = customerRepository.findByCreatedBy(userId);
+        }
+
+
+        return CustomerConverter.toResponse(customers);
     }
 
     public List<CustomerResponse> filterCustomers(String firstName, String lastName, String email, LocalDateTime startDate, LocalDateTime endDate, String region) {
