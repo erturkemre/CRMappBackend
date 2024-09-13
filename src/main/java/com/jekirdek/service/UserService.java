@@ -25,7 +25,7 @@ public class UserService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    @Transactional
+
     public UserResponse registerUser(UserSaveRequest userSaveRequest) {
         User user = new User();
         user.setUsername(userSaveRequest.getUsername());
@@ -52,14 +52,17 @@ public class UserService {
         return UserConverter.toResponse(updatedUser);
     }
 
-    public String loginUser(UserLoginRequest request) {
+    public UserResponse loginUser(UserLoginRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new ErrorException("USER_NOT_FOUND"));
 
-        return jwtUtil.generateToken(user,user.getId(),String.valueOf(user.getRole()),user.getEmail());
+        String token = jwtUtil.generateToken(user,user.getId(),String.valueOf(user.getRole()),user.getEmail());
+        UserResponse userResponse = UserConverter.toResponse(user);
+        userResponse.setToken(token);
 
+        return userResponse;
     }
 
 }
