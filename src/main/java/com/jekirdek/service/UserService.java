@@ -10,11 +10,14 @@ import com.jekirdek.exception.ErrorException;
 import com.jekirdek.repository.UserRepository;
 import com.jekirdek.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +27,22 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final Environment env;
 
 
+    public String checkUser(){
+        List<User> adminList = userRepository.findAdmins();
+        if(!adminList.isEmpty()){
+            return "admin already exist";
+        }
+        User user = new User();
+        user.setUsername("admin");
+        user.setRole(Role.ADMIN);
+        user.setPassword(passwordEncoder.encode(env.getProperty("ADMIN_PASSWORD")));
+        user.setEmail(env.getProperty("ADMIN_EMAIL"));
+        userRepository.save(user);
+        return "admin created";
+    }
     public UserResponse registerUser(UserSaveRequest userSaveRequest) {
         User user = new User();
         user.setUsername(userSaveRequest.getUsername());
